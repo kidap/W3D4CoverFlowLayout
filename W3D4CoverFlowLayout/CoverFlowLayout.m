@@ -13,27 +13,16 @@ static CGFloat ZOOM_FACTOR = 1.2;
 @implementation CoverFlowLayout
 
 -(instancetype)init{
-  self = [super init];
-  if (self) {
+  if (self = [super init]) {
     self.itemSize = CGSizeMake(200, 200);
     self.minimumLineSpacing = 10;
     self.minimumInteritemSpacing = 10;
     self.sectionInset = UIEdgeInsetsMake(10, 10, 10, 10);
-    
     self.scrollDirection = UICollectionViewScrollDirectionHorizontal;
   }
   return self;
 }
-
-//-(void)prepareLayout{
-//  //Calculate scroll direction, item size
-//  
-//}
-
--(NSArray *)layoutAttributesForElementsInRect:(CGRect)rect
-{
-  //    NSLog(@"Returning attributes for elements in {(%f, %f),(%f, %f)}",
-  //          rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
+-(NSArray *)layoutAttributesForElementsInRect:(CGRect)rect{
   NSArray* attributes = [super layoutAttributesForElementsInRect:rect];
   
   CGRect visibleRect;
@@ -53,16 +42,15 @@ static CGFloat ZOOM_FACTOR = 1.2;
       CGFloat normalizedDistance= distance / collectionViewHalfFrame;
       
       if (ABS(distance) < collectionViewHalfFrame) {
-      
+        
         CGFloat zoom = 1 + ZOOM_FACTOR*(1- ABS(normalizedDistance));
         NSLog(@"Zoom factor: %f",zoom);
         NSLog(@"NormalizedDistance: %f",normalizedDistance);
         
         //Rotation
         CATransform3D rotationTransform = CATransform3DIdentity;
-//        rotationTransform = CATransform3DMakeRotation(normalizedDistance * M_PI_2 *0.8, 0.0f, 1.0f, 0.0f);
+        //rotationTransform = CATransform3DMakeRotation(normalizedDistance * M_PI_2 *0.8, 0.0f, 1.0f, 0.0f);
         rotationTransform = CATransform3DMakeRotation(normalizedDistance * M_PI_2 *1.6, 0.0f, 1.0f, 0.0f);
-//        rotationTransform = CATransform3DMakeRotation(0, 0.0f, 1.0f, 0.0f);
         
         //Zoom
         CATransform3D zoomTransform = CATransform3DMakeScale(zoom, zoom, 1.0);
@@ -70,16 +58,14 @@ static CGFloat ZOOM_FACTOR = 1.2;
         //Set rotation and zoom
         layoutAttributes.transform3D = CATransform3DConcat(zoomTransform, rotationTransform);
         
-        //
+        //Controls which view is on top or bottom
         layoutAttributes.zIndex = ABS(normalizedDistance) * 10.0f;
         
         //Adjust alpha based on distance from center
         CGFloat alpha = (1  - ABS(normalizedDistance)) + 0.1;
         if (alpha > 1.0f) alpha = 1.0f;
         layoutAttributes.alpha = alpha;
-      }
-      else
-      {
+      } else{
         layoutAttributes.alpha = 0.0f;
       }
     }
@@ -91,10 +77,4 @@ static CGFloat ZOOM_FACTOR = 1.2;
 -(BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds{
   return YES;
 }
-
-////Transform the cell
-//-(UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath{
-//  UICollectionViewLayoutAttributes *attribute = [super layoutAttributesForItemAtIndexPath:indexPath];
-//  return attribute;
-//}
 @end
